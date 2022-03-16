@@ -1,8 +1,27 @@
+/**
+ * @file main.cpp
+ * @author Erfan Rasti (erfanrasty@gmail.com)
+ * @brief
+ * @version 1.0.1
+ * @date 2022-03-16
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
 
+// Adding the libraries
 #include <gtest/gtest.h>
 #include <iostream>
-// #include "client.h"
+#include "client.h"
 #include "server.h"
+
+void show_pending_transactions()
+{
+    std::cout << std::string(20, '*') << std::endl;
+    for (const auto& trx : pending_trxs)
+        std::cout << trx << std::endl;
+    std::cout << std::string(20, '*') << std::endl;
+}
 
 int main(int argc, char** argv)
 {
@@ -16,9 +35,19 @@ int main(int argc, char** argv)
         // show_wallets(server);
         // std::cout<<"bryan1->get_id(): "<<bryan1->get_id()<<std::endl;
 
+        // Server server {};
+        // pending_trxs.clear();
+        // auto bryan { server.add_client("bryan") };
+        // auto clint { server.add_client("clint") };
+        // auto sarah { server.add_client("sarah") };
+        // EXPECT_TRUE(bryan->transfer_money("clint", 1));
+        // EXPECT_TRUE(clint->transfer_money("sarah", 2.5));
+        // EXPECT_TRUE(sarah->transfer_money("bryan", 0.5));
+        // show_pending_transactions();
+
         // std::string sender {}, receiver {};
         // double value;
-        // Server::parse_trx("sarah-clay---0.2", sender, receiver, value);
+        // Server::parse_trx("sarah-clay--0.2", sender, receiver, value);
 
     } else {
         ::testing::InitGoogleTest(&argc, argv);

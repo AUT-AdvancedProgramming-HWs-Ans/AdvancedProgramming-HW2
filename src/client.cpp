@@ -1,9 +1,19 @@
+/**
+ * @file client.cpp
+ * @author Erfan Rasti (erfanrasty@gmail.com)
+ * @brief
+ * @version 1.0.1
+ * @date 2022-03-16
+ *
+ * @copyright Copyright (c) 2022
+ *
+ */
+
 // Adding the libraries
 #include "client.h"
 #include "server.h"
 
 Client::Client(std::string _id, const Server& _server)
-
     : id { _id }
     , server { &_server }
 {
@@ -99,6 +109,5 @@ size_t Client::generate_nonce()
     std::uniform_real_distribution<double> dist(0, 999999999);
 
     return static_cast<size_t>(dist(generator));
-
 
 } // end of Client::generate_nonce

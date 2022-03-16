@@ -1,6 +1,38 @@
+/**
+ * @file server.cpp
+ * @author Erfan Rasti (@domain.com)
+ * @brief 
+ * @version 0.1
+ * @date 2022-03-16
+ * 
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
 // Adding the libraries
 #include "server.h"
 #include "client.h"
+
+std::shared_ptr<Client> Server::get_client(std::string id) const
+{
+    /**
+     * @brief Get the client object
+     *
+     * @param id The id of the client
+     * @return std::shared_ptr<Client>
+     */
+
+    // Check if the client exists
+    for (auto clientItr { clients.begin() }; clientItr != clients.end(); ++clientItr) {
+        if (clientItr->first->get_id() == id) {
+            return clientItr->first;
+        }
+    }
+
+    // Return nullptr if the client does not exist
+    return nullptr;
+
+} // end of Server::get_client
 
 std::shared_ptr<Client> Server::add_client(std::string id)
 {
@@ -41,7 +73,7 @@ std::shared_ptr<Client> Server::add_client(std::string id)
     }
 
     // Creating a new client that does not exist
-    std::shared_ptr<Client> newClient = std::make_shared<Client>(id, *this);
+    std::shared_ptr<Client> newClient { std::make_shared<Client>(id, *this) };
 
     // Adding the client to the server
     clients.insert({ newClient, 5 });
@@ -53,27 +85,6 @@ std::shared_ptr<Client> Server::add_client(std::string id)
     return newClient;
 
 } // end of Server::add_client
-
-std::shared_ptr<Client> Server::get_client(std::string id) const
-{
-    /**
-     * @brief Get the client object
-     *
-     * @param id The id of the client
-     * @return std::shared_ptr<Client>
-     */
-
-    // Check if the client exists
-    for (auto clientItr { clients.begin() }; clientItr != clients.end(); ++clientItr) {
-        if (clientItr->first->get_id() == id) {
-            return clientItr->first;
-        }
-    }
-
-    // Return nullptr if the client does not exist
-    return nullptr;
-
-} // end of Server::get_client
 
 double Server::get_wallet(std::string id) const
 {
@@ -96,22 +107,6 @@ double Server::get_wallet(std::string id) const
 
 } // end of Server::get_wallet
 
-void show_wallets(const Server& server)
-{
-    /**
-     * @brief Show the wallets of all the clients
-     *
-     * @param server The server object
-     */
-
-    // Reinnterpret casting the server object to a const reference
-    auto* serverPtr { reinterpret_cast<const std::map<std::shared_ptr<Client>, double>*>(&server) };
-
-    for (const auto& clientItr : *serverPtr)
-        std::cout << clientItr.first->get_id() << " : " << clientItr.second << std::endl;
-
-} // end of show_wallets
-
 bool Server::parse_trx(std::string trx, std::string& sender, std::string& receiver, double& value)
 {
 
@@ -126,25 +121,15 @@ bool Server::parse_trx(std::string trx, std::string& sender, std::string& receiv
      */
 
     std::stringstream trxStringStreamed(trx);
-    std::string trxElements[3] {};
-
+    std::string trxElements[4] {};
+    size_t i {};
     // Splitting the transaction into 3 elements
-    for (size_t i {}; std::getline(trxStringStreamed, trxElements[i], '-'); ++i) { }
+    for (i; i < 4 && std::getline(trxStringStreamed, trxElements[i], '-'); ++i) { }
 
     // Check if the transaction string is valid
-    if (trxElements[0] == "" || trxElements[1] == "" || trxElements[2] == "") {
+    if (i != 3) {
         throw std::runtime_error("trx string is not in the correct format");
     }
-
-    // size_t i {};
-    // for (i; std::getline(trxStringStreamed, trxElements[i], '-')&&i<3; ++i) { }
-    // // Check if the transaction string is valid
-    // if (i != 3) {
-    //     throw std::runtime_error("trx string is not in the correct format");
-    // }
-    // if(stod(trxElements[2]) <= 0) {
-    //     throw std::runtime_error("trx value is not valid");
-    // }
 
     sender = trxElements[0];
     receiver = trxElements[1];
@@ -259,3 +244,19 @@ size_t Server::mine()
         }
     }
 }
+
+void show_wallets(const Server& server)
+{
+    /**
+     * @brief Show the wallets of all the clients
+     *
+     * @param server The server object
+     */
+
+    // Reinnterpret casting the server object to a const reference
+    auto* serverPtr { reinterpret_cast<const std::map<std::shared_ptr<Client>, double>*>(&server) };
+
+    for (const auto& clientItr : *serverPtr)
+        std::cout << clientItr.first->get_id() << " : " << clientItr.second << std::endl;
+
+} // end of show_wallets
