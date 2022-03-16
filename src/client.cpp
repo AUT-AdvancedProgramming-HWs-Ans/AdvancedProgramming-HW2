@@ -1,3 +1,4 @@
+// Adding the libraries
 #include "client.h"
 #include "server.h"
 
@@ -16,7 +17,8 @@ Client::Client(std::string _id, const Server& _server)
     std::cout << "An Object of Client class is created." << std::endl;
 
     crypto::generate_key(public_key, private_key);
-}
+} // end of Client::Client
+
 std::string Client::get_id() const
 {
     /**
@@ -24,7 +26,8 @@ std::string Client::get_id() const
      * @return std::string
      */
     return id;
-}
+} // end of Client::get_id
+
 std::string Client::get_publickey() const
 {
     /**
@@ -32,7 +35,7 @@ std::string Client::get_publickey() const
      * @return std::string
      */
     return public_key;
-}
+} // end of Client::get_publickey
 
 double Client::get_wallet() const
 {
@@ -41,7 +44,7 @@ double Client::get_wallet() const
      * @return double
      */
     return server->get_wallet(id);
-}
+} // end of Client::get_wallet
 
 std::string Client::sign(std::string txt) const
 {
@@ -51,4 +54,4 @@ std::string Client::sign(std::string txt) const
      * @return std::string
      */
     return crypto::signMessage(private_key, txt);
-}
+} // end of Client::sign
