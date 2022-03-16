@@ -4,16 +4,16 @@
  * @brief
  * @version 1.0.1
  * @date 2022-03-16
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 // Adding the libraries
-#include <gtest/gtest.h>
-#include <iostream>
 #include "client.h"
 #include "server.h"
+#include <gtest/gtest.h>
+#include <iostream>
 
 void show_pending_transactions()
 {

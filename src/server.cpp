@@ -1,12 +1,12 @@
 /**
  * @file server.cpp
- * @author Erfan Rasti (@domain.com)
- * @brief 
- * @version 0.1
+ * @author Erfan Rasti (erfanrasty@gmail.com)
+ * @brief
+ * @version 1.0.1
  * @date 2022-03-16
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 // Adding the libraries
@@ -217,6 +217,7 @@ size_t Server::mine()
 
             size_t nonce { clientItr->first->generate_nonce() };
 
+            // Get the hash of the mempool and check if it can be mined
             size_t isFound { ((crypto::sha256(mempool + std::to_string(nonce))).substr(0, 10)).find("000") };
 
             if (isFound != std::string::npos) {
@@ -227,6 +228,7 @@ size_t Server::mine()
                 std::cout << "Nonce:" << nonce << std::endl;
                 std::cout << "Block:" << mempool << std::endl;
 
+                // Perform the pending transactions
                 for (const auto& trxItr : pending_trxs) {
 
                     std::string sender {}, receiver {};

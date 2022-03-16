@@ -1,12 +1,12 @@
 /**
  * @file client.h
-  * @author Erfan Rasti (erfanrasty@gmail.com)
+ * @author Erfan Rasti (erfanrasty@gmail.com)
  * @brief
  * @version 1.0.1
  * @date 2022-03-16
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 #ifndef CLIENT_H
 #define CLIENT_H
