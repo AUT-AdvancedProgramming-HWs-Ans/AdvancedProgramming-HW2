@@ -4,12 +4,13 @@
 #include "server.h"
 #include "client.h"
 
-/*
+
 TEST(HW1Test, TEST1) {
     Server server{};
     auto bryan{server.add_client("bryan")};
     EXPECT_EQ(bryan->get_id(), "bryan");
 }
+
 
 TEST(HW1Test, TEST2) {
     Server server{};
@@ -73,7 +74,7 @@ TEST(HW1Test, TEST9) {
     EXPECT_FALSE(crypto::verifySignature(p->get_publickey(), "notmydata", signature));
     EXPECT_FALSE(crypto::verifySignature(p->get_publickey(), "mydata", "not_my_signature"));
 }
-
+/*
 TEST(HW1Test, TEST10) {
     std::string sender{}, receiver{};
     double value;
