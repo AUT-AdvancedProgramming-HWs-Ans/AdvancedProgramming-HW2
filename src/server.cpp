@@ -12,20 +12,21 @@ std::shared_ptr<Client> Server::add_client(std::string id)
      */
 
     // Check if the client already exists
-    if (Server::get_client(id) != nullptr) {
+    if (get_client(id) != nullptr) {
 
-        // Creating a random number engine
-        std::random_device rd;
+        // True random number generator to obtain a seed (slow)
+        std::random_device seeder;
 
-        // Creating a random number generator
-        std::mt19937 gen(rd());
+        // Efficient pseudo-random generator
+        std::default_random_engine generator { seeder() };
+        // std::mt19937 generator { seeder() };
 
         // Creating a uniform distribution
         std::uniform_real_distribution<double> dist(1000, 9999);
 
         // Adding a 4 digit random number to the id and creating a new client
         std::shared_ptr<Client> newClient {
-            std::make_shared<Client>(id + std::to_string(static_cast<int>(dist(gen))),
+            std::make_shared<Client>(id + std::to_string(static_cast<size_t>(dist(generator))),
                 *this)
         };
 
@@ -83,13 +84,15 @@ double Server::get_wallet(std::string id) const
      * @return double
      */
 
+    std::shared_ptr<Client> client { get_client(id) };
+
     // Check if the client exists
-    if (Server::get_client(id) == nullptr) {
+    if (client == nullptr) {
         // Return 0 if the client does not exist
         return 0;
     }
     // Return the wallet of the client
-    return clients.find(Server::get_client(id))->second;
+    return clients.find(client)->second;
 
 } // end of Server::get_wallet
 
@@ -165,29 +168,29 @@ bool Server::add_pending_trx(std::string trx, std::string signature) const
     double value {};
 
     // Check if the transaction is valid
-    if (Server::parse_trx(trx, sender, receiver, value)) {
+    if (parse_trx(trx, sender, receiver, value)) {
 
         // Check if the sender exists
-        if (Server::get_client(sender) == nullptr) {
-            std::cout<<"sender does not exist"<<std::endl;
+        if (get_client(sender) == nullptr) {
+            std::cout << "sender does not exist" << std::endl;
             return false;
         }
 
         // Check if the receiver exists
-        if (Server::get_client(receiver) == nullptr) {
-            std::cout<<"receiver does not exist"<<std::endl;
+        if (get_client(receiver) == nullptr) {
+            std::cout << "receiver does not exist" << std::endl;
             return false;
         }
 
         // Check if the sender has enough money
-        if (Server::get_wallet(sender) < value) {
-            std::cout<<"sender does not have enough money"<<std::endl;
+        if (get_wallet(sender) < value) {
+            std::cout << "sender does not have enough money" << std::endl;
             return false;
         }
 
         // Check if the signature is valid
         if (crypto::verifySignature(
-                Server::get_client(sender)->get_publickey(),
+                get_client(sender)->get_publickey(),
                 trx,
                 signature)) {
 
@@ -195,11 +198,64 @@ bool Server::add_pending_trx(std::string trx, std::string signature) const
             pending_trxs.push_back(trx);
 
             return true;
+        } else {
+            std::cout << "signature is not valid" << std::endl;
+            return false;
         }
-    
+
         return false;
     }
 
     return false;
 
 } // end of Server::add_pending_trx
+
+size_t Server::mine()
+{
+    /**
+     * @brief Mine the pending transactions
+     *
+     * @return size_t
+     */
+
+    std::string mempool {};
+
+    // Get the mempool
+    for (const auto& trxItr : pending_trxs) {
+        mempool += trxItr;
+    }
+
+    // Get the hash of the mempool
+    while (true) {
+
+        for (auto clientItr { clients.begin() }; clientItr != clients.end(); ++clientItr) {
+
+            size_t nonce { clientItr->first->generate_nonce() };
+
+            size_t isFound { ((crypto::sha256(mempool + std::to_string(nonce))).substr(0, 10)).find("000") };
+
+            if (isFound != std::string::npos) {
+                clients[clientItr->first] += 6.25;
+
+                std::cout << "Mined a block" << std::endl;
+                std::cout << "Miner:" << clientItr->first->get_id() << std::endl;
+                std::cout << "Nonce:" << nonce << std::endl;
+                std::cout << "Block:" << mempool << std::endl;
+
+                for (const auto& trxItr : pending_trxs) {
+
+                    std::string sender {}, receiver {};
+                    double value {};
+
+                    parse_trx(trxItr, sender, receiver, value);
+
+                    clients[get_client(sender)] -= value;
+                    clients[get_client(receiver)] += value;
+                }
+
+                pending_trxs.clear();
+                return nonce;
+            }
+        }
+    }
+}
