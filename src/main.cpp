@@ -8,13 +8,17 @@ int main(int argc, char** argv)
 {
     if (false) // make false to run unit-tests
     {
-        Server server;
-        auto bryan1 { server.add_client("bryan") };
-        auto bryan2 { server.add_client("bryan") };
-        auto bryan3 { server.add_client("bryan") };
+        // Server server;
+        // auto bryan1 { server.add_client("bryan") };
+        // auto bryan2 { server.add_client("bryan") };
+        // auto bryan3 { server.add_client("bryan") };
 
-        show_wallets(server);
+        // show_wallets(server);
         // std::cout<<"bryan1->get_id(): "<<bryan1->get_id()<<std::endl;
+
+        // std::string sender {}, receiver {};
+        // double value;
+        // Server::parse_trx("sarah-clay---0.2", sender, receiver, value);
 
     } else {
         ::testing::InitGoogleTest(&argc, argv);

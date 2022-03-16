@@ -133,6 +133,16 @@ bool Server::parse_trx(std::string trx, std::string& sender, std::string& receiv
         throw std::runtime_error("trx string is not in the correct format");
     }
 
+    // size_t i {};
+    // for (i; std::getline(trxStringStreamed, trxElements[i], '-')&&i<3; ++i) { }
+    // // Check if the transaction string is valid
+    // if (i != 3) {
+    //     throw std::runtime_error("trx string is not in the correct format");
+    // }
+    // if(stod(trxElements[2]) <= 0) {
+    //     throw std::runtime_error("trx value is not valid");
+    // }
+
     sender = trxElements[0];
     receiver = trxElements[1];
     value = std::stod(trxElements[2]);
@@ -140,3 +150,56 @@ bool Server::parse_trx(std::string trx, std::string& sender, std::string& receiv
     return true;
 
 } // end of Server::parse_trx
+
+bool Server::add_pending_trx(std::string trx, std::string signature) const
+{
+    /**
+     * @brief Add a pending transaction
+     *
+     * @param trx The transaction
+     * @param signature The signature of the transaction
+     * @return bool
+     */
+
+    std::string sender {}, receiver {};
+    double value {};
+
+    // Check if the transaction is valid
+    if (Server::parse_trx(trx, sender, receiver, value)) {
+
+        // Check if the sender exists
+        if (Server::get_client(sender) == nullptr) {
+            std::cout<<"sender does not exist"<<std::endl;
+            return false;
+        }
+
+        // Check if the receiver exists
+        if (Server::get_client(receiver) == nullptr) {
+            std::cout<<"receiver does not exist"<<std::endl;
+            return false;
+        }
+
+        // Check if the sender has enough money
+        if (Server::get_wallet(sender) < value) {
+            std::cout<<"sender does not have enough money"<<std::endl;
+            return false;
+        }
+
+        // Check if the signature is valid
+        if (crypto::verifySignature(
+                Server::get_client(sender)->get_publickey(),
+                trx,
+                signature)) {
+
+            // Add the transaction to the pending transactions
+            pending_trxs.push_back(trx);
+
+            return true;
+        }
+    
+        return false;
+    }
+
+    return false;
+
+} // end of Server::add_pending_trx

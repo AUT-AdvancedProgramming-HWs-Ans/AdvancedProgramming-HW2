@@ -23,6 +23,7 @@ std::string Client::get_id() const
 {
     /**
      * @brief Get the id string
+     *
      * @return std::string
      */
     return id;
@@ -32,6 +33,7 @@ std::string Client::get_publickey() const
 {
     /**
      * @brief Get the publickey string
+     *
      * @return std::string
      */
     return public_key;
@@ -41,6 +43,7 @@ double Client::get_wallet() const
 {
     /**
      * @brief Get the wallet double
+     *
      * @return double
      */
     return server->get_wallet(id);
@@ -50,8 +53,17 @@ std::string Client::sign(std::string txt) const
 {
     /**
      * @brief Sign the string
+     *
      * @param txt The string to sign
      * @return std::string
      */
     return crypto::signMessage(private_key, txt);
 } // end of Client::sign
+
+bool Client::transfer_money(std::string receiver, double value)
+{
+    std::string trxString { id + '-' + receiver + '-' + std::to_string(value) };
+    std::string signature { sign(trxString) };
+
+    return server->add_pending_trx(trxString, signature);
+}
