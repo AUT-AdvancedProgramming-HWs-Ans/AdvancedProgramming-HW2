@@ -2,8 +2,8 @@
  * @file client.cpp
  * @author Erfan Rasti (erfanrasty@gmail.com)
  * @brief
- * @version 1.0.1
- * @date 2022-03-16
+ * @version 1.0.2
+ * @date 2022-03-24
  *
  * @copyright Copyright (c) 2022
  *
@@ -24,7 +24,7 @@ Client::Client(std::string _id, const Server& _server)
      * @param _server The server object
      */
 
-    std::cout << "An Object of Client class is created." << std::endl;
+    // std::cout << "An object of client class is created." << std::endl;
 
     crypto::generate_key(public_key, private_key);
 
@@ -37,6 +37,7 @@ std::string Client::get_id() const
      *
      * @return std::string
      */
+
     return id;
 
 } // end of Client::get_id
@@ -48,6 +49,7 @@ std::string Client::get_publickey() const
      *
      * @return std::string
      */
+
     return public_key;
 
 } // end of Client::get_publickey
@@ -59,6 +61,7 @@ double Client::get_wallet() const
      *
      * @return double
      */
+
     return server->get_wallet(id);
 
 } // end of Client::get_wallet
@@ -71,11 +74,12 @@ std::string Client::sign(std::string txt) const
      * @param txt The string to sign
      * @return std::string
      */
+
     return crypto::signMessage(private_key, txt);
 
 } // end of Client::sign
 
-bool Client::transfer_money(std::string receiver, double value)
+bool Client::transfer_money(std::string receiver, double value) const
 {
     /**
      * @brief Transfer money to the receiver
@@ -84,6 +88,7 @@ bool Client::transfer_money(std::string receiver, double value)
      * @param value The value to transfer
      * @return bool
      */
+
     std::string trxString { id + '-' + receiver + '-' + std::to_string(value) };
     std::string signature { sign(trxString) };
 
@@ -91,13 +96,14 @@ bool Client::transfer_money(std::string receiver, double value)
 
 } // end of Client::transfer_money
 
-size_t Client::generate_nonce()
+size_t Client::generate_nonce() const
 {
     /**
      * @brief Generate a nonce
      *
      * @return size_t
      */
+
     // True random number generator to obtain a seed (slow)
     std::random_device seeder;
 

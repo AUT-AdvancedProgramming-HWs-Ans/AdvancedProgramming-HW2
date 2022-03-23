@@ -2,8 +2,8 @@
  * @file client.h
  * @author Erfan Rasti (erfanrasty@gmail.com)
  * @brief
- * @version 1.0.1
- * @date 2022-03-16
+ * @version 1.0.2
+ * @date 2022-03-24
  *
  * @copyright Copyright (c) 2022
  *
@@ -15,6 +15,7 @@
 #include "crypto.h"
 #include <iostream>
 
+// Forwards declaration
 class Server;
 
 class Client {
@@ -24,8 +25,8 @@ public:
     std::string get_publickey() const;
     double get_wallet() const;
     std::string sign(std::string txt) const;
-    bool transfer_money(std::string receiver, double value);
-    size_t generate_nonce();
+    bool transfer_money(std::string receiver, double value) const;
+    size_t generate_nonce() const;
 
 private:
     Server const* const server;

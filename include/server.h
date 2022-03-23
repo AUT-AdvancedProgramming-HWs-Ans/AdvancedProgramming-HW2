@@ -1,18 +1,18 @@
 /**
  * @file server.h
  * @author Erfan Rasti (erfanrasty@gmail.com)
- * @brief 
- * @version 1.0.1
- * @date 2022-03-16
- * 
+ * @brief
+ * @version 1.0.2
+ * @date 2022-03-24
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
+
 #ifndef SERVER_H
 #define SERVER_H
 
 // Adding the libraries
-#include "client.h"
 #include <iostream>
 #include <map>
 #include <memory>
@@ -20,6 +20,9 @@
 #include <sstream>
 #include <string>
 #include <vector>
+
+// Forwards declaration
+class Client;
 
 class Server {
 public:

@@ -2,8 +2,8 @@
  * @file main.cpp
  * @author Erfan Rasti (erfanrasty@gmail.com)
  * @brief
- * @version 1.0.1
- * @date 2022-03-16
+ * @version 1.0.2
+ * @date 2022-03-24
  *
  * @copyright Copyright (c) 2022
  *
@@ -48,6 +48,10 @@ int main(int argc, char** argv)
         // std::string sender {}, receiver {};
         // double value;
         // Server::parse_trx("sarah-clay--0.2", sender, receiver, value);
+
+        // std::cout << "sender: " << sender << std::endl;
+        // std::cout << "receiver: " << receiver << std::endl;
+        // std::cout << "value: " << value << std::endl;
 
     } else {
         ::testing::InitGoogleTest(&argc, argv);

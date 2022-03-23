@@ -2,8 +2,8 @@
  * @file server.cpp
  * @author Erfan Rasti (erfanrasty@gmail.com)
  * @brief
- * @version 1.0.1
- * @date 2022-03-16
+ * @version 1.0.2
+ * @date 2022-03-24
  *
  * @copyright Copyright (c) 2022
  *
@@ -23,9 +23,9 @@ std::shared_ptr<Client> Server::get_client(std::string id) const
      */
 
     // Check if the client exists
-    for (auto clientItr { clients.begin() }; clientItr != clients.end(); ++clientItr) {
-        if (clientItr->first->get_id() == id) {
-            return clientItr->first;
+    for (const auto& clientItr : clients) {
+        if (clientItr.first->get_id() == id) {
+            return clientItr.first;
         }
     }
 
@@ -65,8 +65,8 @@ std::shared_ptr<Client> Server::add_client(std::string id)
         // Adding the client to the server
         clients.insert({ newClient, 5 });
 
-        std::cout << newClient->get_id() << std::endl;
-        std::cout << newClient << std::endl;
+        // std::cout << newClient->get_id() << std::endl;
+        // std::cout << newClient << std::endl;
 
         // Returning the client
         return newClient;
@@ -78,8 +78,8 @@ std::shared_ptr<Client> Server::add_client(std::string id)
     // Adding the client to the server
     clients.insert({ newClient, 5 });
 
-    std::cout << newClient->get_id() << std::endl;
-    std::cout << newClient << std::endl;
+    // std::cout << newClient->get_id() << std::endl;
+    // std::cout << newClient << std::endl;
 
     // Returning the client
     return newClient;
@@ -153,40 +153,42 @@ bool Server::add_pending_trx(std::string trx, std::string signature) const
     double value {};
 
     // Check if the transaction is valid
-    if (parse_trx(trx, sender, receiver, value)) {
+    if (!parse_trx(trx, sender, receiver, value)) {
+        std::cout << "Parsing trxx failed" << std::endl;
+        return false;
+    }
 
-        // Check if the sender exists
-        if (get_client(sender) == nullptr) {
-            std::cout << "sender does not exist" << std::endl;
-            return false;
-        }
+    // Check if the sender exists
+    if (get_client(sender) == nullptr) {
+        std::cout << "sender does not exist" << std::endl;
+        return false;
+    }
 
-        // Check if the receiver exists
-        if (get_client(receiver) == nullptr) {
-            std::cout << "receiver does not exist" << std::endl;
-            return false;
-        }
+    // Check if the receiver exists
+    if (get_client(receiver) == nullptr) {
+        std::cout << "receiver does not exist" << std::endl;
+        return false;
+    }
 
-        // Check if the sender has enough money
-        if (get_wallet(sender) < value) {
-            std::cout << "sender does not have enough money" << std::endl;
-            return false;
-        }
+    // Check if the sender has enough money
+    if (get_wallet(sender) < value) {
+        std::cout << "sender does not have enough money" << std::endl;
+        return false;
+    }
 
-        // Check if the signature is valid
-        if (crypto::verifySignature(
-                get_client(sender)->get_publickey(),
-                trx,
-                signature)) {
+    // Check if the signature is valid
+    if (crypto::verifySignature(
+            get_client(sender)->get_publickey(),
+            trx,
+            signature)) {
 
-            // Add the transaction to the pending transactions
-            pending_trxs.push_back(trx);
+        // Add the transaction to the pending transactions
+        pending_trxs.push_back(trx);
 
-            return true;
-        } else {
-            std::cout << "signature is not valid" << std::endl;
-            return false;
-        }
+        return true;
+
+    } else {
+        std::cout << "signature is not valid" << std::endl;
 
         return false;
     }
@@ -213,20 +215,22 @@ size_t Server::mine()
     // Get the hash of the mempool
     while (true) {
 
-        for (auto clientItr { clients.begin() }; clientItr != clients.end(); ++clientItr) {
+        for (const auto& clientItr : clients) {
 
-            size_t nonce { clientItr->first->generate_nonce() };
+            size_t nonce { clientItr.first->generate_nonce() };
 
             // Get the hash of the mempool and check if it can be mined
-            size_t isFound { ((crypto::sha256(mempool + std::to_string(nonce))).substr(0, 10)).find("000") };
+            std::string hash { crypto::sha256(mempool + std::to_string(nonce)) };
+            size_t isFound { (hash.substr(0, 10)).find("000") };
 
             if (isFound != std::string::npos) {
-                clients[clientItr->first] += 6.25;
+                clients[clientItr.first] += 6.25;
 
                 std::cout << "Mined a block" << std::endl;
-                std::cout << "Miner:" << clientItr->first->get_id() << std::endl;
+                std::cout << "Miner:" << clientItr.first->get_id() << std::endl;
                 std::cout << "Nonce:" << nonce << std::endl;
                 std::cout << "Block:" << mempool << std::endl;
+                std::cout << "Hash:" << hash << std::endl;
 
                 // Perform the pending transactions
                 for (const auto& trxItr : pending_trxs) {
